@@ -1,0 +1,434 @@
+--[================================================================[--
+    Script Name: IU has (Full Hub - Dark Theme Fixed)
+--]================================================================]--
+
+local Players, RunService, CoreGui, TweenService = game:GetService("Players"), game:GetService("RunService"), game:GetService("CoreGui"), game:GetService("TweenService")
+local LocalPlayer, Camera = Players.LocalPlayer, workspace.CurrentCamera
+
+pcall(function()
+    if CoreGui:FindFirstChild("IUHasHub") then CoreGui.IUHasHub:Destroy() end
+    if CoreGui:FindFirstChild("IU_FlyControls") then CoreGui.IU_FlyControls:Destroy() end
+end)
+
+local ScreenGui = Instance.new("ScreenGui", CoreGui)
+ScreenGui.Name = "IUHasHub"
+
+-- ==================== LOADING SCREEN ====================
+local LoadFrame = Instance.new("Frame", ScreenGui)
+LoadFrame.BackgroundColor3 = Color3.fromRGB(12, 15, 25)
+LoadFrame.BorderColor3 = Color3.fromRGB(0, 180, 255)
+LoadFrame.Size = UDim2.new(0, 320, 0, 110)
+LoadFrame.Position = UDim2.new(0.5, -160, 0.5, -55)
+LoadFrame.Active, LoadFrame.Draggable = true, true
+
+local LoadTitle = Instance.new("TextLabel", LoadFrame)
+LoadTitle.BackgroundTransparency = 1
+LoadTitle.Position = UDim2.new(0, 0, 0, 12)
+LoadTitle.Size = UDim2.new(1, 0, 0, 25)
+LoadTitle.Font = Enum.Font.GothamBold
+LoadTitle.Text = "⚡ IU HAS // MM2 HUB"
+LoadTitle.TextColor3 = Color3.fromRGB(100, 240, 255)
+LoadTitle.TextSize = 14
+
+local LoadText = Instance.new("TextLabel", LoadFrame)
+LoadText.BackgroundTransparency = 1
+LoadText.Position = UDim2.new(0, 0, 0, 42)
+LoadText.Size = UDim2.new(1, 0, 0, 20)
+LoadText.Font = Enum.Font.GothamSemibold
+LoadText.Text = "กำลังโหลดทรัพยากร..."
+LoadText.TextColor3 = Color3.fromRGB(200, 220, 255)
+LoadText.TextSize = 12
+
+-- แถบหลอดโหลด
+local BarBg = Instance.new("Frame", LoadFrame)
+BarBg.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
+BarBg.BorderSizePixel = 0
+BarBg.Position = UDim2.new(0, 20, 0, 72)
+BarBg.Size = UDim2.new(1, -40, 0, 14)
+
+local BarFill = Instance.new("Frame", BarBg)
+BarFill.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+BarFill.BorderSizePixel = 0
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+
+-- ==================== MAIN UI ====================
+local ToggleButton = Instance.new("TextButton", ScreenGui)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 20, 35)
+ToggleButton.BorderColor3 = Color3.fromRGB(0, 180, 255)
+ToggleButton.Position = UDim2.new(0, 20, 0.5, -20)
+ToggleButton.Size = UDim2.new(0, 100, 0, 38)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Text = "⚡ IU HUB"
+ToggleButton.TextColor3 = Color3.fromRGB(0, 220, 255)
+ToggleButton.TextSize = 13
+ToggleButton.Active, ToggleButton.Draggable = true, true
+ToggleButton.Visible = false
+
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 15, 25)
+MainFrame.BorderColor3 = Color3.fromRGB(0, 180, 255)
+MainFrame.Size = UDim2.new(0, 550, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -175)
+MainFrame.Active, MainFrame.Draggable, MainFrame.Visible = true, true, false
+
+ToggleButton.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
+
+-- รันแอนิเมชันโหลด
+task.spawn(function()
+    local tween = TweenService:Create(BarFill, TweenInfo.new(1.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
+    tween:Play()
+    tween.Completed:Wait()
+    task.wait(0.2)
+    LoadFrame:Destroy()
+    ToggleButton.Visible = true
+    MainFrame.Visible = true
+end)
+
+local TopBar = Instance.new("Frame", MainFrame)
+TopBar.BackgroundColor3 = Color3.fromRGB(20, 28, 45)
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+
+local TitleLabel = Instance.new("TextLabel", TopBar)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Position = UDim2.new(0, 12, 0, 0)
+TitleLabel.Size = UDim2.new(1, -20, 1, 0)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.Text = "🛡️ IU HAS // ULTIMATE HUB"
+TitleLabel.TextColor3 = Color3.fromRGB(100, 240, 255)
+TitleLabel.TextSize = 12
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local Sidebar = Instance.new("ScrollingFrame", MainFrame)
+Sidebar.BackgroundColor3 = Color3.fromRGB(16, 22, 35)
+Sidebar.Position = UDim2.new(0, 10, 0, 45)
+Sidebar.Size = UDim2.new(0, 140, 1, -55)
+Sidebar.AutomaticCanvasSize = Enum.AutomaticSize.Y
+Sidebar.BackgroundTransparency = 0
+
+local Container = Instance.new("ScrollingFrame", MainFrame)
+Container.BackgroundColor3 = Color3.fromRGB(10, 12, 20)
+Container.Position = UDim2.new(0, 160, 0, 45)
+Container.Size = UDim2.new(1, -170, 1, -55)
+Container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+Container.BackgroundTransparency = 0
+
+local function createTab(name, order)
+    local btn = Instance.new("TextButton", Sidebar)
+    btn.BackgroundColor3 = Color3.fromRGB(22, 30, 48)
+    btn.Position = UDim2.new(0, 5, 0, (order - 1) * 38 + 5)
+    btn.Size = UDim2.new(1, -10, 0, 32)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.Text = "🔹 " .. name
+    btn.TextColor3 = Color3.fromRGB(180, 230, 255)
+    btn.TextSize = 12
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    return btn
+end
+
+local function createPage(name)
+    local p = Instance.new("ScrollingFrame", Container)
+    p.Name = name
+    p.BackgroundTransparency = 1
+    p.Size = UDim2.new(1, 0, 1, 0)
+    p.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    p.Visible = false
+    local UIList = Instance.new("UIListLayout", p)
+    UIList.SortOrder = Enum.SortOrder.LayoutOrder
+    UIList.Padding = UDim.new(0, 8)
+    return p
+end
+
+local tabMain, pageMain = createTab("ฟังก์ชันหลัก", 1), createPage("Main")
+local tabAntiPro, pageAntiPro = createTab("ป้องกันโปร", 2), createPage("AntiPro")
+pageMain.Visible = true
+
+tabMain.MouseButton1Click:Connect(function() pageMain.Visible, pageAntiPro.Visible = true, false end)
+tabAntiPro.MouseButton1Click:Connect(function() pageMain.Visible, pageAntiPro.Visible = false, true end)
+
+local function addToggle(parent, text, callback)
+    local itemFrame = Instance.new("Frame", parent)
+    itemFrame.BackgroundColor3 = Color3.fromRGB(22, 30, 48)
+    itemFrame.BorderColor3 = Color3.fromRGB(0, 180, 255)
+    itemFrame.Size = UDim2.new(1, -10, 0, 38)
+    
+    local label = Instance.new("TextLabel", itemFrame)
+    label.BackgroundTransparency = 1
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.Size = UDim2.new(1, -80, 1, 0)
+    label.Font = Enum.Font.GothamSemibold
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(220, 235, 255)
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local switchBtn = Instance.new("TextButton", itemFrame)
+    switchBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+    switchBtn.Position = UDim2.new(1, -65, 0.5, -11)
+    switchBtn.Size = UDim2.new(0, 50, 0, 22)
+    switchBtn.Font = Enum.Font.GothamBold
+    switchBtn.Text = "OFF"
+    switchBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+    switchBtn.TextSize = 10
+    
+    local active = false
+    switchBtn.MouseButton1Click:Connect(function()
+        active = not active
+        switchBtn.BackgroundColor3 = active and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(40, 50, 70)
+        switchBtn.Text = active and "ON" or "OFF"
+        switchBtn.TextColor3 = active and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(255, 90, 90)
+        pcall(function() callback(active) end)
+    end)
+end
+
+local function addTextBox(parent, placeholder, callback)
+    local box = Instance.new("TextBox", parent)
+    box.BackgroundColor3 = Color3.fromRGB(22, 30, 48)
+    box.Size = UDim2.new(1, -10, 0, 36)
+    box.Font = Enum.Font.GothamSemibold
+    box.PlaceholderText = placeholder
+    box.Text = ""
+    box.TextColor3 = Color3.fromRGB(0, 220, 255)
+    box.TextSize = 12
+    box.FocusLost:Connect(function(enter)
+        if enter and box.Text ~= "" then pcall(function() callback(box.Text) end) box.Text = "" end
+    end)
+end
+
+local function getMurdererHRP()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character then
+            local hum = p.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                if (p.Character:FindFirstChild("Knife") or (p.Backpack and p.Backpack:FindFirstChild("Knife"))) and p.Character:FindFirstChild("HumanoidRootPart") then
+                    return p.Character.HumanoidRootPart
+                end
+            end
+        end
+    end
+end
+
+-- ================= 1. ป้องกันโปร (1) =================
+addToggle(pageAntiPro, "กันโปรเตะ / กันผลัก (Anti-Push)", function(state)
+    _G.AntiPushPro = state
+    RunService.Stepped:Connect(function()
+        if _G.AntiPushPro and LocalPlayer.Character then
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer and p.Character then
+                    for _, part in pairs(p.Character:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
+                end
+            end
+        end
+    end)
+end)
+
+-- ================= 2. ฟังก์ชันหลัก (2 - 12) =================
+
+-- [2] ตรวจจับบทบาท (แสดงข้อความบนหัว + ไฮไลท์ตัวละคร ไม่มีเส้นลาก)
+addToggle(pageMain, "ตรวจจับบทบาท (Role ESP + Custom Text)", function(state)
+    _G.RoleESP = state
+    if not state then
+        pcall(function()
+            for _, p in pairs(Players:GetPlayers()) do
+                if p.Character then
+                    if p.Character:FindFirstChild("Head") and p.Character.Head:FindFirstChild("IU_RoleTag") then p.Character.Head.IU_RoleTag:Destroy() end
+                    if p.Character:FindFirstChild("IU_RoleHighlight") then p.Character.IU_RoleHighlight:Destroy() end
+                end
+            end
+        end)
+    end
+    task.spawn(function()
+        while _G.RoleESP do
+            RunService.RenderStepped:Wait()
+            pcall(function()
+                for _, p in pairs(Players:GetPlayers()) do
+                    if p ~= LocalPlayer then
+                        local char = p.Character
+                        local hum = char and char:FindFirstChildOfClass("Humanoid")
+                        local head = char and char:FindFirstChild("Head")
+                        
+                        if char and hum and hum.Health > 0 and head then
+                            local hasKnife = char:FindFirstChild("Knife") or (p.Backpack and p.Backpack:FindFirstChild("Knife"))
+                            local hasGun = char:FindFirstChild("Gun") or (p.Backpack and p.Backpack:FindFirstChild("Gun"))
+                            
+                            local rColor = hasKnife and Color3.fromRGB(255, 50, 50) or (hasGun and Color3.fromRGB(50, 150, 255) or Color3.fromRGB(50, 255, 50))
+                            local rText = hasKnife and "ไอ่ชั่ว" or (hasGun and "ตำรวจ" or "คนดี")
+                            
+                            -- ป้ายข้อความบนหัว
+                            local tag = head:FindFirstChild("IU_RoleTag") or Instance.new("BillboardGui", head)
+                            tag.Name, tag.Size, tag.StudsOffset, tag.AlwaysOnTop = "IU_RoleTag", UDim2.new(0, 100, 0, 40), Vector3.new(0, 2.5, 0), true
+                            local lbl = tag:FindFirstChild("Text") or Instance.new("TextLabel", tag)
+                            lbl.Name, lbl.BackgroundTransparency, lbl.Size, lbl.Font, lbl.TextSize = "Text", 1, UDim2.new(1, 0, 1, 0), Enum.Font.GothamBold, 14
+                            lbl.Text, lbl.TextColor3 = rText, rColor
+                            
+                            -- Highlight ตัวละคร
+                            local hl = char:FindFirstChild("IU_RoleHighlight") or Instance.new("Highlight", char)
+                            hl.Name, hl.FillTransparency, hl.FillColor = "IU_RoleHighlight", 0.4, rColor
+                        else
+                            if head and head:FindFirstChild("IU_RoleTag") then head.IU_RoleTag:Destroy() end
+                            if char and char:FindFirstChild("IU_RoleHighlight") then char.IU_RoleHighlight:Destroy() end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+-- [3] มองเหรียญ (Coin Rainbow ESP)
+addToggle(pageMain, "มองเหรียญ (Coin Rainbow ESP)", function(state)
+    _G.CoinESP = state
+    task.spawn(function()
+        while _G.CoinESP do
+            task.wait(0.2)
+            pcall(function()
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj.Name == "Coin" or obj.Name == "CoinVisual" or obj.Name == "GunDrop" then
+                        local hl = obj:FindFirstChild("IU_CoinHighlight") or Instance.new("Highlight", obj)
+                        hl.Name, hl.Adornee, hl.FillTransparency, hl.FillColor = "IU_CoinHighlight", obj, 0.5, Color3.fromHSV(tick() % 5 / 5, 1, 1)
+                    end
+                end
+            end)
+        end
+        pcall(function() for _, obj in pairs(workspace:GetDescendants()) do if obj:FindFirstChild("IU_CoinHighlight") then obj.IU_CoinHighlight:Destroy() end end end)
+    end)
+end)
+
+-- [4] ปรับความเร็วบิน
+local flySpeed = 50
+addTextBox(pageMain, "ปรับความเร็วบิน (ค่าเริ่มต้น 50)", function(val) flySpeed = tonumber(val) or flySpeed end)
+
+-- [5] บิน (Fly + ปุ่ม ▲▼)
+local FlyControlGui = Instance.new("ScreenGui", CoreGui)
+FlyControlGui.Name, FlyControlGui.Enabled = "IU_FlyControls", false
+
+local btnUp = Instance.new("TextButton", FlyControlGui)
+btnUp.BackgroundColor3, btnUp.Position, btnUp.Size, btnUp.Font, btnUp.Text, btnUp.TextColor3, btnUp.TextSize = Color3.fromRGB(20, 28, 45), UDim2.new(1, -120, 0.5, -60), UDim2.new(0, 50, 0, 50), Enum.Font.GothamBold, "▲", Color3.fromRGB(0, 220, 255), 22
+
+local btnDown = Instance.new("TextButton", FlyControlGui)
+btnDown.BackgroundColor3, btnDown.Position, btnDown.Size, btnDown.Font, btnDown.Text, btnDown.TextColor3, btnDown.TextSize = Color3.fromRGB(20, 28, 45), UDim2.new(1, -120, 0.5, 10), UDim2.new(0, 50, 0, 50), Enum.Font.GothamBold, "▼", Color3.fromRGB(255, 90, 90), 22
+
+local isFlyingUp, isFlyingDown = false, false
+btnUp.MouseButton1Down:Connect(function() isFlyingUp = true end)
+btnUp.MouseButton1Up:Connect(function() isFlyingUp = false end)
+btnDown.MouseButton1Down:Connect(function() isFlyingDown = true end)
+btnDown.MouseButton1Up:Connect(function() isFlyingDown = false end)
+
+addToggle(pageMain, "บิน (Fly + ปุ่ม ▲▼)", function(state)
+    _G.FlyEnabled, FlyControlGui.Enabled = state, state
+    if _G.FlyEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = LocalPlayer.Character.HumanoidRootPart
+        local bg, bv = Instance.new("BodyGyro", hrp), Instance.new("BodyVelocity", hrp)
+        bg.P, bg.maxTorque = 9e4, Vector3.new(9e9, 9e9, 9e9)
+        bv.maxForce, bv.velocity = Vector3.new(9e9, 9e9, 9e9), Vector3.new(0, 0, 0)
+        task.spawn(function()
+            while _G.FlyEnabled and hrp and hrp.Parent do
+                local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                local moveDir = (hum and hum.MoveDirection.Magnitude > 0) and hum.MoveDirection or Vector3.new(0,0,0)
+                local upVal = isFlyingUp and flySpeed or (isFlyingDown and -flySpeed or 0)
+                bv.velocity = bv.velocity:Lerp((moveDir * flySpeed) + Vector3.new(0, upVal, 0), 0.2)
+                bg.cframe = CFrame.new(hrp.Position, hrp.Position + Camera.CFrame.LookVector)
+                RunService.RenderStepped:Wait()
+            end
+            pcall(function() bg:Destroy() bv:Destroy() end)
+        end)
+    end
+end)
+
+-- [6] ปรับความเร็ววิ่ง
+local walkSpeedVal = 16
+addTextBox(pageMain, "ปรับความเร็ววิ่ง (ค่าเริ่มต้น 16)", function(val) walkSpeedVal = tonumber(val) or 16 end)
+
+-- [7] วิ่งไว (Super Speed)
+addToggle(pageMain, "วิ่งไว (Super Speed)", function(state)
+    _G.SuperSpeed = state
+    task.spawn(function()
+        while _G.SuperSpeed do
+            task.wait(0.2)
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then LocalPlayer.Character.Humanoid.WalkSpeed = walkSpeedVal end
+        end
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.WalkSpeed = 16 end
+    end)
+end)
+
+-- [8] ล็อคฆาตกร (Fast Snap Lock)
+addToggle(pageMain, "ล็อคฆาตกร (Fast Snap Lock)", function(state)
+    _G.LockKiller = state
+    RunService.RenderStepped:Connect(function()
+        if _G.LockKiller then
+            local murdererHRP = getMurdererHRP()
+            if murdererHRP then Camera.CFrame = CFrame.new(Camera.CFrame.Position, murdererHRP.Position) end
+        end
+    end)
+end)
+
+-- [9] ทะลุกำแพง (Noclip)
+addToggle(pageMain, "ทะลุกำแพง (Noclip)", function(state)
+    _G.Noclip = state
+    RunService.Stepped:Connect(function()
+        if _G.Noclip and LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
+        end
+    end)
+end)
+
+-- [10] ปาดทีเดียวตายยกเซิฟ (Mass Kill)
+addToggle(pageMain, "ปาดทีเดียวตายยกเซิฟ (Mass Kill)", function(state)
+    _G.MassKill = state
+    task.spawn(function()
+        while _G.MassKill do
+            task.wait(0.05)
+            local knife = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Knife") or (LocalPlayer.Backpack and LocalPlayer.Backpack:FindFirstChild("Knife"))
+            if knife and knife:FindFirstChild("Handle") then
+                for _, p in pairs(Players:GetPlayers()) do
+                    if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                        pcall(function() firetouchinterest(p.Character.HumanoidRootPart, knife.Handle, 0) firetouchinterest(p.Character.HumanoidRootPart, knife.Handle, 1) end)
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+-- [11] เก็บปืนอัตโนมัติ (Auto Pull Gun)
+addToggle(pageMain, "เก็บปืนอัตโนมัติ (Auto Pull Gun)", function(state)
+    _G.AutoPullGun = state
+    task.spawn(function()
+        while _G.AutoPullGun do
+            task.wait(0.2)
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = LocalPlayer.Character.HumanoidRootPart
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj.Name == "GunDrop" then
+                        local part = obj:IsA("BasePart") and obj or obj:FindFirstChildWhichIsA("BasePart")
+                        if part then part.CFrame = hrp.CFrame end
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+-- [12] ก๊อปไอเทมมีด / ปืน (Duplicate Items)
+addToggle(pageMain, "ก๊อปไอเทมมีด (Duplicate Knife)", function(state)
+    if state then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character then
+                local k = p.Character:FindFirstChild("Knife") or (p.Backpack and p.Backpack:FindFirstChild("Knife"))
+                if k then k:Clone().Parent = LocalPlayer.Backpack end
+            end
+        end
+    end
+end)
+
+addToggle(pageMain, "ก๊อปไอเทมปืน (Duplicate Gun)", function(state)
+    if state then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character then
+                local g = p.Character:FindFirstChild("Gun") or (p.Backpack and p.Backpack:FindFirstChild("Gun"))
+                if g then g:Clone().Parent = LocalPlayer.Backpack end
+            end
+        end
+    end
+end)
+
+print(">> [IU has] Full Hub Loaded Successfully!")
